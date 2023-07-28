@@ -1,0 +1,19 @@
+# Ignore directories
+__pycache__
+venv/
+.vscode/
+.dockerignore
+.git/
+.github/
+.htmlcov/
+logs/
+.vs/
+.pytest_cache/
+htmlcov/
+
+# Ignore specific files
+docker-compose*
+Dockerfile*
+poetry.lock
+PTC.md
+README.md

@@ -1,0 +1,43 @@
+version: '3.8'
+services:
+  postgres:
+    container_name: munchie_pg
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: mealmatch
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  pgadmin:
+    container_name: munchie_pgadmin
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5051:80"
+
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - 8000:8000
+    depends_on:
+      - postgres
+
+  alembic_upgrade:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - fastapi
+    command: alembic upgrade head
+volumes:
+  postgres_data:

@@ -1,0 +1,73 @@
+{
+	// Place your Backend workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Placeholders with the same ids are connected.
+	// Example:
+	"Add client fixture": {
+		"scope": "python",
+		"prefix": "client",
+		"body": [
+			"client: AsyncClient, "
+		],
+		"description": "Add client fixture"
+	},
+	"Add fastapi client fixture": {
+		"scope": "python",
+		"prefix": "fastapi_client",
+		"body": [
+			"fastapi_client: TestClient, "
+		],
+		"description": "Add fastapi client fixture"
+	},
+	"Add admin fixture": {
+		"scope": "python",
+		"prefix": "admin",
+		"body": [
+			"admin_token_headers: Dict[str, str], "
+		],
+		"description": "Add admin fixture"
+	},
+	"Add normal user fixture": {
+		"scope": "python",
+		"prefix": "normal_user",
+		"body": [
+			"normal_user_token_headers: Dict[str, str], "
+		],
+		"description": "Add normal user fixture"
+	},
+	"Add groups fixture": {
+		"scope": "python",
+		"prefix": "groups",
+		"body": [
+			"groups: list[Dict[str, str]], "
+		],
+		"description": "Add groups fixture"
+	},
+	"Add sessions fixture": {
+		"scope": "python",
+		"prefix": "sessions",
+		"body": [
+			"sessions: list[Dict[str, str]], "
+		],
+		"description": "Add sessions fixture"
+	},
+	"Add users fixture": {
+		"scope": "python",
+		"prefix": "users",
+		"body": [
+			"users: list[Dict[str, str]], "
+		],
+		"description": "Add users fixture"
+	},
+	"Add async pytest": {
+		"scope": "python",
+		"prefix": "@pytest",
+		"body": [
+			"@pytest.mark.asyncio\nasync def "
+		],
+		"description": "Add async pytest"
+	}
+}
