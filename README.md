@@ -4,6 +4,8 @@ Taken from [munchie](https://github.com/PastaCarbonara/Backend/).
 
 Original template from [teamhide](https://github.com/teamhide/fastapi-boilerplate).
 
+Currently does not contain a WebSocket example. The Munchie repository does.
+
 ## To install the template
 
 Make sure you are using the right python version.
@@ -21,6 +23,8 @@ Then:
 Now to run the project:
 
 `python main.py`
+
+Head to [localhost:8000/api/latest/docs](http://localhost:8000/api/latest/docs) to test it out.
 
 ## Update database
 
