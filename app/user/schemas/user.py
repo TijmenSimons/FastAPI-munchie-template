@@ -1,6 +1,5 @@
 from pydantic import BaseModel, Field
-from core.fastapi.schemas import HashId
-from core.fastapi.schemas.hashid import DehashId
+from core.fastapi.schemas.hashid import HashId
 
 
 class UserSchema(BaseModel):
@@ -14,16 +13,9 @@ class UserSchema(BaseModel):
 
 
 class UpdateUserSchema(BaseModel):
-    id: DehashId
     display_name: str
     username: str
-    password: str
-
-
-class UpdateMeSchema(BaseModel):
-    display_name: str
-    username: str
-    password: str
+    password: str = None
 
 
 class CreateUserSchema(BaseModel):
@@ -42,3 +34,7 @@ class CreateUserResponseSchema(BaseModel):
 class LoginResponseSchema(BaseModel):
     access_token: str = Field(..., description="Access token")
     refresh_token: str = Field(..., description="Refresh token")
+
+
+class SetAdminSchema(BaseModel):
+    is_admin: bool

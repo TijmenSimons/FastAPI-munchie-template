@@ -1,4 +1,5 @@
-# from core.db.models import User
+from app.user.utils import get_password_hash
+from core.db.models import User
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -14,9 +15,20 @@ def seed_db():
     with Session() as session:
         # Add your things here
 
-        session.add_all(
-            []
+        admin_user = User(
+            display_name="admin",
+            username="admin",
+            password=get_password_hash("admin"),
+            is_admin=True,
         )
+
+        normal_user = User(
+            display_name="normal_user",
+            username="normal_user",
+            password=get_password_hash("normal_user"),
+        )
+
+        session.add_all([admin_user, normal_user])
         session.commit()
 
     # needed to call this because test.db couldnt be deleted anymore

@@ -4,7 +4,6 @@ Class business logic for json web tokens
 
 from core.fastapi.schemas.token import TokensSchema
 from core.exceptions.base import UnauthorizedException
-from core.exceptions.token import DecodeTokenException
 from core.helpers.hashid import decode_single, encode
 from core.utils.token_checker import token_checker
 from core.utils.token_helper import TokenHelper
@@ -47,12 +46,6 @@ class JwtService:
             UnauthorizedException: If the new token ID cannot be generated
         """
         refresh_token = TokenHelper.decode(token=refresh_token)
-
-        if refresh_token.get("jti") is None:
-            raise DecodeTokenException
-
-        if refresh_token.get("sub") != "refresh":
-            raise DecodeTokenException
 
         user_id = decode_single(refresh_token.get("user_id"))
         user_id = encode(user_id)

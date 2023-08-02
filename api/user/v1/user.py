@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, Depends
-from app.user.schemas.user import UpdateUserSchema
+from app.user.schemas.user import SetAdminSchema, UpdateUserSchema
 from core.exceptions import ExceptionResponseSchema
 from core.fastapi.dependencies.hashid import get_path_user_id
 from core.fastapi.dependencies.permission import IsAuthenticated, IsUserOwner
@@ -54,8 +54,21 @@ async def create_user(request: CreateUserSchema):
 async def update_user(
     request: UpdateUserSchema, user_id: str = Depends(get_path_user_id)
 ):
-    user_req = UpdateUserSchema(id=user_id, **request.dict())
-    return await UserService().update(user_req)
+    return await UserService().update(user_id, request)
+
+
+@user_v1_router.patch(
+    "/{user_id}/admin",
+    response_model=UserSchema,
+    responses={"400": {"model": ExceptionResponseSchema}},
+    dependencies=[
+        Depends(PermissionDependency([[IsAdmin]]))
+    ],
+)
+async def set_admin(
+    request: SetAdminSchema, user_id: str = Depends(get_path_user_id)
+):
+    return await UserService().set_admin(user_id, request)
 
 
 @user_v1_router.delete(

@@ -9,7 +9,7 @@ from app.user.exceptions.user import (
 )
 from app.user.utils import get_password_hash
 from app.user.repository.user import UserRepository
-from app.user.schemas.user import UpdateUserSchema
+from app.user.schemas.user import SetAdminSchema, UpdateUserSchema
 from core.db.models import User
 from core.db.session import session
 
@@ -37,7 +37,7 @@ class UserService:
         """
         return await self.repo.get_user_list()
 
-    async def update(self, updated_user: UpdateUserSchema) -> User:
+    async def update(self, user_id: int, updated_user: UpdateUserSchema) -> User:
         """
         Updates the user information in the repository.
 
@@ -52,10 +52,17 @@ class UserService:
         Returns:
             int: The ID of the updated user.
         """
+        if not updated_user.password:
+            user: User = await self.repo.get_by_id(user_id)
+            updated_user.password = user.password
+
+        else:
+            updated_user.password = get_password_hash(updated_user.password)
+
         user_dict = updated_user.dict()
 
-        await self.repo.update_by_id(model_id=updated_user.id, params=user_dict)
-        user = await self.repo.get_by_id(updated_user.id)
+        await self.repo.update_by_id(model_id=user_id, params=user_dict)
+        user = await self.repo.get_by_id(user_id)
         await session.refresh(user)
         return user
 
@@ -79,26 +86,6 @@ class UserService:
         """
         return await self.repo.get_by_username(username)
 
-    async def get_by_display_name(self, display_name) -> User:
-        """Get the user with the given display name.
-
-        Parameters
-        ----------
-        display_name : str
-            The display name of the user.
-
-        Returns
-        -------
-        User
-            The user with the given display name.
-
-        Raises
-        ------
-        UserNotFoundException
-            If the user with the given display name does not exist.
-        """
-        return await self.repo.get_by_display_name(display_name)
-
     async def get_by_id(self, user_id: int) -> User:
         """Get a user by id.
 
@@ -118,8 +105,10 @@ class UserService:
             If the user with the given id does not exist.
         """
         user = await self.repo.get_by_id(user_id)
+
         if not user:
             raise UserNotFoundException()
+        
         return user
 
     async def create_user(self, display_name: str, username: str, password: str) -> int:
@@ -150,7 +139,7 @@ class UserService:
         user_id = await self.repo.create_user(display_name, username, hashed_pwd)
         return user_id
 
-    async def set_admin(self, user_id: int, is_admin: bool):
+    async def set_admin(self, user_id: int, request: SetAdminSchema):
         """Set admin status for a user.
 
         Parameters
@@ -166,7 +155,9 @@ class UserService:
             If the user with the given id does not exist.
         """
         user = await self.get_by_id(user_id)
-        await self.repo.set_admin(user, is_admin)
+
+        await self.repo.set_admin(user, request.is_admin)
+        return user
 
     async def is_admin(self, user_id: int) -> bool:
         """Check if a user is an admin.
@@ -187,6 +178,7 @@ class UserService:
             If the user with the given id does not exist.
         """
         user = await self.get_by_id(user_id)
+        
         return user.is_admin
 
     async def delete_user(self, user_id) -> None:
@@ -201,8 +193,5 @@ class UserService:
 
         if not user:
             raise UserNotFoundException
-
-        if user.account_auth:
-            await self.repo.delete(user.account_auth)
 
         await self.repo.delete(user)

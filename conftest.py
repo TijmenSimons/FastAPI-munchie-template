@@ -1,5 +1,4 @@
 import os
-import subprocess
 import pytest
 from dotenv import load_dotenv
 from fastapi.testclient import TestClient
@@ -32,6 +31,9 @@ async def admin_token_headers(client: AsyncClient) -> Dict[str, str]:
         "password": "admin",
     }
     response = await client.post("/api/latest/auth/login", json=login_data)
+    
+    assert response.status_code == 200, "Login failure"
+    
     response = response.json()
     access_token = response["access_token"]
 
@@ -45,6 +47,9 @@ async def normal_user_token_headers(client: AsyncClient) -> Dict[str, str]:
         "password": "normal_user",
     }
     response = await client.post("/api/latest/auth/login", json=login_data)
+
+    assert response.status_code == 200, "Login failure"
+
     response = response.json()
     access_token = response["access_token"]
 
@@ -76,10 +81,12 @@ def pytest_configure(config):
         print("Options:")
         print("\t-h\t\t: Show this menu")
         print(
-            "\t--use-db\t: Accepts 'True' or 'False'; 'False' by default;  Use the existing database for testing."
+            "\t--use-db\t: Accepts 'True' or 'False'; 'False' by default;  \
+                Use the existing database for testing."
         )
         print(
-            "\t--no-db-del\t: Accepts 'True' or 'False'; 'False' by default;  Deletes database after it finishes the tests."
+            "\t--no-db-del\t: Accepts 'True' or 'False'; 'False' by default;  \
+                Deletes database after it finishes the tests."
         )
         print()
         print("dont worry about this error :), its made to make this menu look good :D")
@@ -125,7 +132,10 @@ def pytest_unconfigure(config):
 def generate_database():
     if os.path.isfile("test.db"):
         pytest.exit(
-            "test.db already exists, remove it to have unpolluted tests. \nor provide `--use-db True` to use the existing database\n\nNOTE! If you also did not provide `--no-db-del True` then `test.db` is now deleted!"
+            "test.db already exists, remove it to have unpolluted tests. \n\
+                or provide `--use-db True` to use the existing database\n\n\
+                NOTE! If you also did not provide `--no-db-del True` then `test.db` is \
+                now deleted!"
         )
 
     engine = create_engine(

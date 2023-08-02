@@ -69,24 +69,6 @@ class UserRepository(BaseRepo):
         result = await session.execute(query)
         return result.scalars().first()
 
-    async def get_by_display_name(self, display_name: str) -> User:
-        """Get user by display name.
-
-        Parameters
-        ----------
-        display_name : str
-            Display name.
-
-        Returns
-        -------
-        User
-            User instance.
-        """
-        query = select(User).where(User.display_name == display_name)
-        query = self.query_options(query)
-        result = await session.execute(query)
-        return result.scalars().first()
-
     async def get_user_list(self) -> List[User]:
         """Get user list.
 

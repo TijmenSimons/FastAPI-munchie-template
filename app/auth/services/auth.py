@@ -71,7 +71,4 @@ class AuthService:
         except DecodeTokenException:
             return Response(status_code=400)
 
-        except Exception:
-            return Response(status_code=500)
-
         return Response(status_code=200)

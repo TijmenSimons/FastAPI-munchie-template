@@ -26,7 +26,7 @@
 		"scope": "python",
 		"prefix": "admin",
 		"body": [
-			"admin_token_headers: Dict[str, str], "
+			"admin_token_headers: dict[str, str], "
 		],
 		"description": "Add admin fixture"
 	},
@@ -34,31 +34,15 @@
 		"scope": "python",
 		"prefix": "normal_user",
 		"body": [
-			"normal_user_token_headers: Dict[str, str], "
+			"normal_user_token_headers: dict[str, str], "
 		],
 		"description": "Add normal user fixture"
-	},
-	"Add groups fixture": {
-		"scope": "python",
-		"prefix": "groups",
-		"body": [
-			"groups: list[Dict[str, str]], "
-		],
-		"description": "Add groups fixture"
-	},
-	"Add sessions fixture": {
-		"scope": "python",
-		"prefix": "sessions",
-		"body": [
-			"sessions: list[Dict[str, str]], "
-		],
-		"description": "Add sessions fixture"
 	},
 	"Add users fixture": {
 		"scope": "python",
 		"prefix": "users",
 		"body": [
-			"users: list[Dict[str, str]], "
+			"users: list[dict[str, str]], "
 		],
 		"description": "Add users fixture"
 	},
