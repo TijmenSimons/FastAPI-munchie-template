@@ -4,10 +4,8 @@ Connection manager for websockets
 
 import json
 import logging
-import random
-import time
 from starlette.websockets import WebSocketState
-from fastapi import WebSocket, WebSocketDisconnect, status
+from fastapi import WebSocket, status
 from pydantic import ValidationError
 from pydantic.main import ModelMetaclass
 from core.db.enums import WebsocketActionEnum
@@ -52,44 +50,6 @@ class WebsocketConnectionManager:
 
         self.active_pools: dict = {}
         self.permissions = permissions
-
-    async def queued_run(self, pool_id, func, **kwargs):
-        ticket = random.random()
-        queue = self.active_pools[pool_id]["queue"]
-        queue.append(ticket)
-        start_time = time.time()
-
-        timeout = 20
-
-        while queue[0] != ticket:
-            ...
-            if start_time + timeout < time.time():
-                print(f"{timeout} seconds have passed, " "ignoring queue position 1...")
-                print(queue)
-                start_time = time.time()
-                queue.pop(0)
-
-        try:
-            await func(pool_id=pool_id, **kwargs)
-        except WebSocketDisconnect:
-            ...
-        except Exception as exc:
-            log_name = get_logger(exc)
-            logging.info(f"func: {func.__name__}, params: {kwargs}")
-            logging.info(self.active_pools.get(pool_id))
-            logging.exception(exc)
-
-            packet = WebsocketPacketSchema(
-                action=WebsocketActionEnum.CONNECTION_CODE,
-                payload={
-                    "code": "500",
-                    "message": f"An error happened, check the log \
-                        '{log_name}' for more info",
-                },
-            )
-            await self.pool_broadcast(pool_id, packet)
-
-        queue.pop(0)
 
     async def check_auth(
         self, permissions: list[list[BaseWebsocketPermission]] = None, **kwargs
@@ -142,7 +102,6 @@ class WebsocketConnectionManager:
         return websocket
 
     async def send_data(self, websocket: WebSocket, data: dict):
-        print("WEBSOCKET SENDING:", data)
         if (
             websocket.client_state == WebSocketState.CONNECTED
             and websocket.application_state == WebSocketState.CONNECTED
@@ -168,7 +127,6 @@ class WebsocketConnectionManager:
             schema.
         """
         data = await websocket.receive_text()
-        print("WEBSOCKET RECEIVING:", data)
 
         try:
             data_json = json.loads(data)

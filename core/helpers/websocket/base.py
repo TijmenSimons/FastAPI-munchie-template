@@ -65,12 +65,11 @@ class BaseWebsocketService:
                         packet.action.value, self.handle_action_not_implemented
                     )
 
-                    await self.manager.queued_run(
+                    await func(
                         pool_id=pool_id,
-                        func=func,
                         packet=packet,
                         websocket=websocket,
-                        **kwargs
+                        **kwargs,
                     )
 
         except WebSocketDisconnect:
@@ -88,7 +87,6 @@ class BaseWebsocketService:
             logging.info(f"pool_id {pool_id}, func: {func.__name__}")
             logging.info(self.active_pools.get(pool_id))
             logging.exception(exc)
-            print(exc)
 
     async def handle_action_not_implemented(self, websocket: WebSocket, **kwargs):
         """Handle an action packet that has not been implemented.
@@ -129,7 +127,7 @@ class BaseWebsocketService:
         pool_id: int,
         packet: WebsocketPacketSchema,
         websocket: WebSocket,
-        **kwargs
+        **kwargs,
     ):
         """Handle a message sent by a participant of a pool to the entire pool.
 

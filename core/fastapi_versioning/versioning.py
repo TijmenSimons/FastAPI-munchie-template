@@ -75,10 +75,14 @@ def VersionedFastAPI(
         parent_app.mount(f"{app_prefix}{prefix}", versioned_app)
 
         @parent_app.get(
-            f"{app_prefix}{prefix}/openapi.json", name=endpoint_version, tags=["Versions"]
+            f"{app_prefix}{prefix}/openapi.json",
+            name=endpoint_version,
+            tags=["Versions"],
         )
         @parent_app.get(
-            f"{app_prefix}{prefix}/docs", name=endpoint_version, tags=["Documentations"]
+            f"{app_prefix}{prefix}/docs",
+            name=endpoint_version,
+            tags=["Documentations"],
         )
         def noop() -> None:
             ...
@@ -100,7 +104,9 @@ def VersionedFastAPI(
         parent_app.mount(f"{app_prefix}{prefix}", versioned_app)
 
         @parent_app.get(
-            f"{app_prefix}{prefix}/openapi.json", name=endpoint_version, tags=["Versions"]
+            f"{app_prefix}{prefix}/openapi.json",
+            name=endpoint_version,
+            tags=["Versions"],
         )
         @parent_app.get(
             f"{app_prefix}{prefix}/docs", name=endpoint_version, tags=["Documentations"]

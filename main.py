@@ -13,7 +13,6 @@ import os
 
 import click
 import uvicorn
-from app.user.utils import get_password_hash
 
 from core.config import config
 
@@ -54,5 +53,4 @@ def main(env: str = None, debug: bool = None):
 
 
 if __name__ == "__main__":
-    print(get_password_hash("admin"))
     main()

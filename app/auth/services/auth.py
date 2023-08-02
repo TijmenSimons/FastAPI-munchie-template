@@ -2,6 +2,8 @@
 Class business logic for the authentication
 """
 
+from fastapi import Response
+from core.exceptions.token import DecodeTokenException
 from core.fastapi.schemas.token import TokensSchema
 from app.auth.services.jwt import JwtService
 from app.user.exceptions.user import IncorrectPasswordException, UserNotFoundException
@@ -58,3 +60,18 @@ class AuthService:
             raise IncorrectPasswordException()
 
         return await self.jwt.create_login_tokens(user_id=user.id)
+    
+    async def refresh_tokens(self, refresh_token: str) -> str:
+        return await JwtService().refresh_tokens(refresh_token=refresh_token)
+
+    async def verify_token(self, token: str):
+        try:
+            await JwtService().verify_token(token=token)
+
+        except DecodeTokenException:
+            return Response(status_code=400)
+
+        except Exception:
+            return Response(status_code=500)
+
+        return Response(status_code=200)

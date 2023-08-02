@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends, Response
-from core.exceptions import ExceptionResponseSchema, DecodeTokenException
+from fastapi import APIRouter, Depends
+from core.exceptions import ExceptionResponseSchema
 from core.fastapi.dependencies.permission import AllowAll, PermissionDependency
 from core.fastapi_versioning import version
 
@@ -10,7 +10,6 @@ from core.fastapi.schemas.token import (
     LoginRequest,
 )
 from app.auth.services.auth import AuthService
-from app.auth.services.jwt import JwtService
 
 auth_v1_router = APIRouter()
 
@@ -23,7 +22,7 @@ auth_v1_router = APIRouter()
 )
 @version(1)
 async def refresh_token(request: RefreshTokenRequest):
-    return await JwtService().refresh_tokens(refresh_token=request.refresh_token)
+    return await AuthService().refresh_tokens(request.refresh_token)
 
 
 @auth_v1_router.post(
@@ -39,17 +38,7 @@ async def verify_token(request: VerifyTokenRequest):
         400: Token is invalid (expired or other).
         500: Something went wrong.
     """
-    try:
-        await JwtService().verify_token(token=request.token)
-
-    except DecodeTokenException:
-        return Response(status_code=400)
-
-    except Exception as exc:
-        print(exc)
-        return Response(status_code=500)
-
-    return Response(status_code=200)
+    return await AuthService().verify_token(request.token)
 
 
 @auth_v1_router.post(

@@ -36,11 +36,11 @@ class JwtService:
 
         Args:
             refresh_token (str): The old refresh token to use as a template for the new
-            refresh token
+            refresh token.
 
         Returns:
             TokensSchema: A new set of tokens containing the new access token and 
-            refresh token
+            refresh token.
 
         Raises:
             DecodeTokenException: If the old refresh token cannot be decoded
@@ -60,11 +60,8 @@ class JwtService:
         try:
             jti = token_checker.generate_add(refresh_token.get("jti"))
 
-        except ValueError as exc:
+        except (ValueError, KeyError) as exc:
             raise UnauthorizedException from exc
-
-        except KeyError as exc:
-            raise DecodeTokenException from exc
 
         return TokensSchema(
             access_token=TokenHelper.encode_access(payload={"user_id": user_id}),

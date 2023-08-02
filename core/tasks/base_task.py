@@ -25,7 +25,8 @@ class BaseTask:
         `stop()`: Stops the task.
         `run()`: Runs the task.
         `exec()`: Placeholder method for defining task behavior.
-        `countdown()`: Placeholder property method that returns the time interval between task runs in seconds.
+        `countdown()`: Placeholder property method that returns the time interval
+        between task runs in seconds.
     """
 
     def __init__(
@@ -89,7 +90,8 @@ class BaseTask:
             success_message = (
                 f"{bcolors.OKGREEN}TASK SUCCESSFUL{bcolors.ENDC}"
                 f"{bcolors.BOLD}: {self.name}{bcolors.ENDC}"
-                f" - Time spent: {bcolors.BOLD}{str(round(time_spent, 2))}{bcolors.ENDC}s"
+                f" - Time spent: {bcolors.BOLD}{str(round(time_spent, 2))}"
+                f"{bcolors.ENDC}s"
                 f" - Next iteration: {bcolors.BOLD}{next_iteration}{bcolors.ENDC}s"
             )
             print(success_message)
@@ -103,9 +105,11 @@ class BaseTask:
                 time_spent = end - start
 
                 failure_message = (
-                    f"{bcolors.FAIL}{bcolors.BOLD}{bcolors.UNDERLINE}TASK FAILED{bcolors.ENDC}"
+                    f"{bcolors.FAIL}{bcolors.BOLD}{bcolors.UNDERLINE}TASK FAILED"
+                    f"{bcolors.ENDC}"
                     f"{bcolors.ENDC}{bcolors.BOLD}: {self.name}{bcolors.ENDC}"
-                    f" - Time spent: {bcolors.BOLD}{str(round(time_spent, 2))}{bcolors.ENDC}s"
+                    f" - Time spent: {bcolors.BOLD}{str(round(time_spent, 2))}"
+                    f"{bcolors.ENDC}s"
                     f" - Error: {exc}"
                 )
                 print(failure_message)
@@ -127,6 +131,7 @@ class BaseTask:
 
 
 # NOTE: Example task.
+
 
 class Task(BaseTask):
     def __init__(self, session, capture_exceptions) -> None:
