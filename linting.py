@@ -10,7 +10,7 @@ from core.helpers import bcolors
 THRESHOLD = 9
 
 if len(sys.argv) < 2:
-    raise Exception("Module to evaluate needs to be the first argument") # pylint: disable=broad-exception-raised
+    raise TypeError("Module to evaluate needs to be the first argument")
 
 run = lint.Run([sys.argv[1]], do_exit=False)
 score = round(run.linter.stats.global_note, 2)

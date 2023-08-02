@@ -2,7 +2,6 @@
 Helper functions for user.
 """
 
-import random
 from passlib.context import CryptContext
 
 PWD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -31,15 +30,3 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         bool: True if the passwords match, False otherwise.
     """
     return PWD_CONTEXT.verify(plain_password, hashed_password)
-
-
-def generate_name() -> str:
-    """Generates a random name by reading from a list of names.
-
-    Returns:
-        str: The randomly generated name.
-    """
-    with open("core/storage/names.txt", "r", encoding="utf-8") as names_file:
-        names = names_file.read().split("\n")
-
-    return random.choice(names)

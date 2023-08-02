@@ -13,6 +13,7 @@ import os
 
 import click
 import uvicorn
+from app.user.utils import get_password_hash
 
 from core.config import config
 
@@ -34,7 +35,8 @@ def main(env: str = None, debug: bool = None):
     Boot up the application.
 
     Args:
-        env (str): The environment to run the application in, can be one of "local", "dev", or "prod".
+        env (str): The environment to run the application in, can be one of "local", 
+        "dev", or "prod".
         debug (bool): Whether or not to run the application in debug mode.
 
     Returns:
@@ -52,4 +54,5 @@ def main(env: str = None, debug: bool = None):
 
 
 if __name__ == "__main__":
+    print(get_password_hash("admin"))
     main()

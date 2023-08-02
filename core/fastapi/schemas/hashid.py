@@ -1,4 +1,4 @@
-from core.helpers.hashid import decode, decode_single, encode
+from core.helpers.hashid import decode_single, encode
 
 
 class HashId(int):
@@ -28,7 +28,7 @@ class DehashId(str):
             try: 
                 int(v)
                 return v
-            except:
+            except (ValueError, TypeError):
                 raise TypeError('hash required')
         
         return decode_single(v)

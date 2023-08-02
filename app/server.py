@@ -8,14 +8,14 @@ import logging
 from fastapi import FastAPI, Depends, Request
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, HTMLResponse
+from fastapi.responses import JSONResponse
 
 from api import router
 from api.home.home import home_router
 
 from core.config import config
 from core.exceptions import CustomException
-from core.fastapi.dependencies import Logging
+from core.fastapi.dependencies.logging import Logging
 from core.fastapi.middlewares import (
     AuthenticationMiddleware,
     AuthBackend,
@@ -147,13 +147,6 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
-
-
-@app.get("/")
-async def get():
-    with open("tests/ws_test.html", "r", encoding="utf-8") as ws_test:
-        html = ws_test.read()
-    return HTMLResponse(html)
 
 
 # Greg is disappointed

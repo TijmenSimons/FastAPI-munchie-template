@@ -1,5 +1,4 @@
-from core.db.models import *
-from app.user.utils import get_password_hash
+# from core.db.models import User
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 

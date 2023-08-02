@@ -2,7 +2,7 @@
 Class business logic for json web tokens
 """
 
-from api.auth.v1.response.auth import TokensSchema
+from core.fastapi.schemas.token import TokensSchema
 from core.exceptions.base import UnauthorizedException
 from core.exceptions.token import DecodeTokenException
 from core.helpers.hashid import decode_single, encode
@@ -39,7 +39,8 @@ class JwtService:
             refresh token
 
         Returns:
-            TokensSchema: A new set of tokens containing the new access token and refresh token
+            TokensSchema: A new set of tokens containing the new access token and 
+            refresh token
 
         Raises:
             DecodeTokenException: If the old refresh token cannot be decoded

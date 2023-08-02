@@ -35,9 +35,3 @@ class DuplicateUsernameException(CustomException):
     code = 409
     error_code = "USER__DUPLICATE_USERNAME"
     message = "duplicate username"
-
-
-class DuplicateClientTokenException(CustomException):
-    code = 409
-    error_code = "USER__DUPLICATE_CLIENT_TOKEN"
-    message = "duplicate client token"

@@ -3,10 +3,8 @@ The module contains a repository class that defines database operations for user
 """
 
 from typing import List
-import uuid
 from sqlalchemy import select
-from sqlalchemy.orm import joinedload
-from core.db.models import AccountAuth, User
+from core.db.models import User
 from core.db import session
 from core.db.transactional import Transactional
 from core.repository.base import BaseRepo
@@ -18,29 +16,28 @@ class UserRepository(BaseRepo):
 
     def __init__(self):
         super().__init__(User)
-        
+
     def query_options(self, query):
-        return query.options(
-            joinedload(User.account_auth),
-            joinedload(User.image),
-        )
+        return query.options()
 
     @Transactional()
-    async def create_user(self, display_name: str, ctoken: uuid.UUID) -> None:
+    async def create_user(
+        self,
+        display_name: str,
+        username: str,
+        password: str,
+    ) -> None:
         """Create a new user.
 
-        Parameters
-        ----------
-        display_name : str
-            Display name for the user.
-        ctoken : uuid.UUID
-            Client token for the user.
+        Args:
+            display_name(str): The user's display name.
+            username (str): The user's username.
+            password (str): The user's password.
 
-        Returns
-        -------
-        None
+        Returns:
+            int: The new user's id.
         """
-        user = User(display_name=display_name, client_token=ctoken)
+        user = User(display_name=display_name, username=username, password=password)
         session.add(user)
         await session.flush()
         return user.id
@@ -53,50 +50,6 @@ class UserRepository(BaseRepo):
         synchronize_session: SynchronizeSessionEnum = "auto",
     ):
         await super().update_by_id(model_id, params, synchronize_session)
-
-    @Transactional()
-    async def create_account_auth(self, user_id, username, password):
-        """Create an account authentication instance for a user.
-
-        Parameters
-        ----------
-        user_id : int
-            User id.
-        username : str
-            Account username.
-        password : str
-            Account password.
-
-        Returns
-        -------
-        None
-        """
-        user = await self.get_by_id(user_id)
-        account_auth = AccountAuth(username=username, password=password)
-        session.add(account_auth)
-        user.account_auth = account_auth
-        return user
-
-    async def get_by_client_token(self, ctoken: uuid.UUID) -> User:
-        """Retrieve a user by client token.
-
-        Parameters
-        ----------
-        ctoken : uuid.UUID
-            Client token for the user.
-
-        Returns
-        -------
-        User
-            User instance.
-        """
-        query = (
-            select(User)
-            .where(User.client_token == ctoken)
-        )
-        query = self.query_options(query)
-        result = await session.execute(query)
-        return result.scalars().first()
 
     async def get_by_username(self, username: str) -> User:
         """Get user by username.
@@ -111,11 +64,7 @@ class UserRepository(BaseRepo):
         User
             User instance.
         """
-        query = (
-            select(User)
-            .join(User.account_auth)
-            .where(AccountAuth.username == username)
-        )
+        query = select(User).where(User.username == username)
         query = self.query_options(query)
         result = await session.execute(query)
         return result.scalars().first()
@@ -133,11 +82,7 @@ class UserRepository(BaseRepo):
         User
             User instance.
         """
-        query = (
-            select(User)
-            .join(User.account_auth)
-            .where(User.display_name == display_name)
-        )
+        query = select(User).where(User.display_name == display_name)
         query = self.query_options(query)
         result = await session.execute(query)
         return result.scalars().first()
