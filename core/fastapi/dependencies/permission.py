@@ -13,24 +13,9 @@ from core.exceptions import (
 from core.helpers.hashid import decode_single
 
 
-def get_group_id_from_path(request):
-    hashed_id = request.path_params.get("group_id")
-    if not hashed_id:
-        return None
-
-    return decode_single(hashed_id)
-
 
 def get_user_id_from_path(request):
     hashed_id = request.path_params.get("user_id")
-    if not hashed_id:
-        return None
-
-    return decode_single(hashed_id)
-
-
-def get_session_id_from_path(request):
-    hashed_id = request.path_params.get("session_id")
     if not hashed_id:
         return None
 
@@ -63,6 +48,7 @@ class IsUserOwner(BasePermission):
             return False
 
         return True
+
 
 class IsAdmin(BasePermission):
     exception = UnauthorizedException

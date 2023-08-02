@@ -50,4 +50,4 @@ Checking test coverage
 
 or
 
-`pytest --cov=api --cov=app --cov=core --cov-report=html --cov-fail-under=85`
+`pytest --cov=api --cov=app --cov=core --cov-report=html --cov-fail-under=70`

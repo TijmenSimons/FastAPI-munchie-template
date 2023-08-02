@@ -1,8 +1,7 @@
 """GET CURRENT USER DEPENDENCY"""
 
 from fastapi import Request
-from app.user.exceptions.user import UserNotFoundException
-from app.user.repository.user import UserRepository
+from app.user.services.user import UserService
 from core.db.models import User
 
 
@@ -30,9 +29,6 @@ async def get_current_user(request: Request) -> User:
     if not user or not user.id:
         return None
 
-    user = await UserRepository().get_by_id(user.id)
-
-    if not user:
-        raise UserNotFoundException
+    user = await UserService().get_by_id(user.id)
     
     return user

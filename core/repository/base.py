@@ -16,14 +16,16 @@ Model = TypeVar("Model", bound=Base)
 
 class BaseRepo(Generic[Model]):
     """
-    A generic repository that provides basic database operations for a given SQLAlchemy model.
+    A generic repository that provides basic database operations for a given SQLAlchemy 
+    model.
     """
 
     def __init__(self, model: Type[Model]):
         """
         Initializes the repository.
 
-        :param model: The SQLAlchemy model class for which the repository should provide operations.
+        :param model: The SQLAlchemy model class for which the repository should 
+        provide operations.
         """
         self.model = model
     
@@ -35,7 +37,8 @@ class BaseRepo(Generic[Model]):
         Returns a single model instance with the given ID.
 
         :param model_id: The ID of the model instance to return.
-        :return: The model instance with the given ID, or None if no such instance exists.
+        :return: The model instance with the given ID, or None if no such instance 
+        exists.
         """
         query = select(self.model).where(self.model.id == model_id)
         query = self.query_options(query)
@@ -53,8 +56,8 @@ class BaseRepo(Generic[Model]):
 
         :param model_id: The ID of the model instance to update.
         :param params: A dictionary containing the attribute-value pairs to update.
-        :param synchronize_session: An optional parameter specifying the level of synchronization
-        to use.
+        :param synchronize_session: An optional parameter specifying the level of 
+        synchronization to use.
         """
         query = (
             update(self.model)
@@ -83,7 +86,8 @@ class BaseRepo(Generic[Model]):
         Deletes a single model instance with the given ID.
 
         :param model_id: The ID of the model instance to delete.
-        :param synchronize_session: An optional parameter specifying the level of synchronization to use.
+        :param synchronize_session: An optional parameter specifying the level of 
+        synchronization to use.
         """
         query = (
             delete(self.model)

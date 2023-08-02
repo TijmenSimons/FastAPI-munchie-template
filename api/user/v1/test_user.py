@@ -45,6 +45,18 @@ async def test_update_user(
     users = res.json()
 
     response: Response = await client.patch(
+        f"/api/v1/users/{users[0].get('id')}",
+        json={
+            "id": users[1].get("id"),
+            "display_name": "mr. user",
+            "username": users[1].get("username"),
+            "password": "normal_user",
+        },
+        headers=normal_user_headers,
+    )
+    assert response.status_code == 401
+
+    response: Response = await client.patch(
         f"/api/v1/users/{users[1].get('id')}",
         json={
             "id": users[1].get("id"),

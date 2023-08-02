@@ -11,7 +11,7 @@ class CustomException(Exception):
             self.message = message
 
     def __str__(self) -> str:
-        return self.error_code
+        return str(self.error_code)
 
 
 class BadRequestException(CustomException):

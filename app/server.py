@@ -23,7 +23,6 @@ from core.fastapi.middlewares import (
     ResponseLogMiddleware,
 )
 from core.fastapi_versioning import VersionedFastAPI
-from core.helpers.cache import Cache, RedisBackend, CustomKeyMaker
 from core.helpers.logger import get_logger
 from core.tasks import start_tasks
 
@@ -106,13 +105,6 @@ def make_middleware() -> list[Middleware]:
     return middleware
 
 
-def init_cache() -> None:
-    """
-    Initialize cache
-    """
-    Cache.init(backend=RedisBackend(), key_maker=CustomKeyMaker())
-
-
 def create_app() -> FastAPI:
     """
     Create app
@@ -129,7 +121,6 @@ def create_app() -> FastAPI:
 
     init_routers(app_=app_)
     init_listeners(app_=app_)
-    init_cache()
     start_tasks()
 
     app_ = VersionedFastAPI(

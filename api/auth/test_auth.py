@@ -132,3 +132,20 @@ async def test_fake_tokens(client: AsyncClient):
         json={"refresh_token": expired},
     )
     assert res.status_code == 400
+
+
+@pytest.mark.asyncio
+async def test_bad_auth(client: AsyncClient):
+    login_data = {
+        "username": "normal_user",
+        "password": "normal_user",
+    }
+    res = await client.post("/api/v1/auth/login", json=login_data)
+
+    assert res.status_code == 200
+
+    access_token = res.json().get("access_token")
+
+    res = await client.get("/api/v1/me", headers={"Authorization": access_token})
+    res = await client.get("/api/v1/me", headers={"Authorization": "b " + access_token})
+    res = await client.get("/api/v1/me", headers={"Authorization": "bearer "})
