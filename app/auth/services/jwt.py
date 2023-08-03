@@ -5,8 +5,7 @@ Class business logic for json web tokens
 from core.fastapi.schemas.token import TokensSchema
 from core.exceptions.base import UnauthorizedException
 from core.helpers.hashid import decode_single, encode
-from core.utils.token_checker import token_checker
-from core.utils.token_helper import TokenHelper
+from core.helpers.token import TokenHelper, token_checker
 
 
 class JwtService:

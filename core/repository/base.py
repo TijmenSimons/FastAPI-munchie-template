@@ -96,6 +96,7 @@ class BaseRepo(Generic[Model]):
         )
         await session.execute(query)
 
+    @Transactional()
     async def create(self, model: Model) -> int:
         """
         Creates a new model instance.

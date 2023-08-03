@@ -4,7 +4,7 @@ import jwt
 
 from core.config import config
 from core.exceptions import DecodeTokenException, ExpiredTokenException
-from core.utils.token_checker import token_checker
+from core.helpers.token import token_checker
 
 
 class TokenHelper:

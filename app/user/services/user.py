@@ -136,7 +136,8 @@ class UserService:
             raise DuplicateUsernameException()
         hashed_pwd = get_password_hash(password)
 
-        user_id = await self.repo.create_user(display_name, username, hashed_pwd)
+        user = User(display_name=display_name, username=username, password=hashed_pwd)
+        user_id = await self.repo.create(user)
         return user_id
 
     async def set_admin(self, user_id: int, request: SetAdminSchema):

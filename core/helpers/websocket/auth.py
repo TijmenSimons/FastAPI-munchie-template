@@ -7,7 +7,7 @@ from typing import Annotated, List, Type
 
 from fastapi import Cookie, Query, WebSocketException, status
 from core.exceptions.base import CustomException, UnauthorizedException
-from core.utils.token_helper import TokenHelper
+from core.helpers.token import TokenHelper
 
 # pylint: disable=too-few-public-methods
 

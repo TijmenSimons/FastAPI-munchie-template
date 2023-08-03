@@ -1,3 +1,7 @@
+"""Token checker
+Used to rotate refresh tokens.
+"""
+
 import random
 
 
@@ -11,7 +15,7 @@ class TokenChecker:
             range (int): The range of the token IDs.
         """
         self.tree = {}
-        self.range = 16**30
+        self.range = 1329227995784915872903807060280344576 # 16**30
 
     def __repr__(self):
         output = []

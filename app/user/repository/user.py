@@ -21,28 +21,6 @@ class UserRepository(BaseRepo):
         return query.options()
 
     @Transactional()
-    async def create_user(
-        self,
-        display_name: str,
-        username: str,
-        password: str,
-    ) -> None:
-        """Create a new user.
-
-        Args:
-            display_name(str): The user's display name.
-            username (str): The user's username.
-            password (str): The user's password.
-
-        Returns:
-            int: The new user's id.
-        """
-        user = User(display_name=display_name, username=username, password=password)
-        session.add(user)
-        await session.flush()
-        return user.id
-
-    @Transactional()
     async def update_by_id(
         self,
         model_id: int,
