@@ -6,15 +6,7 @@ from abc import ABC, abstractmethod
 from typing import Annotated, List, Type
 
 from fastapi import Cookie, Query, WebSocketException, status
-from app.swipe_session.services.swipe_session import SwipeSessionService
-from app.user.services.user import UserService
-from app.group.services.group import GroupService
-from core.db.enums import SwipeSessionEnum
-
 from core.exceptions.base import CustomException, UnauthorizedException
-from core.exceptions.hashids import IncorrectHashIDException
-from core.exceptions.websocket import InactiveException, InvalidIdException
-from core.helpers.hashid import decode_single
 from core.utils.token_helper import TokenHelper
 
 # pylint: disable=too-few-public-methods
@@ -65,65 +57,6 @@ class IsAuthenticated(BaseWebsocketPermission):
             return False
 
         return True
-
-
-class IsSessionMember(BaseWebsocketPermission):
-    """Only allow access if authenticated"""
-
-    async def has_permission(self, **kwargs) -> bool:
-        """Function to check permission"""
-        access_token = kwargs.get("access_token")
-        swipe_session_id = kwargs.get("swipe_session_id")
-
-        if not access_token or not swipe_session_id:
-            return False
-
-        try:
-            decoded_token = TokenHelper.decode(token=access_token)
-        except CustomException:
-            return False
-
-        try:
-            user_id = decode_single(decoded_token.get("user_id"))
-            swipe_session_id = decode_single(swipe_session_id)
-        except IncorrectHashIDException:
-            self.exception = InvalidIdException
-            return False
-
-        try:
-            await UserService().get_by_id(user_id)
-            swipe_session = await SwipeSessionService().get_swipe_session_by_id(
-                swipe_session_id
-            )
-        except CustomException:
-            return False
-
-        return await GroupService().is_member(swipe_session.group_id, user_id)
-
-
-class IsActiveSession(BaseWebsocketPermission):
-    """Only allow access if session is active"""
-    exception = InactiveException
-
-    async def has_permission(self, **kwargs) -> bool:
-        """Function to check permission"""
-        swipe_session_id = kwargs.get("swipe_session_id")
-
-        if not swipe_session_id:
-            return False
-
-        try:
-            swipe_session_id = decode_single(swipe_session_id)
-        except IncorrectHashIDException:
-            return False
-
-        swipe_session = await SwipeSessionService().get_swipe_session_by_id(
-            swipe_session_id
-        )
-        if not swipe_session:
-            return False
-
-        return swipe_session.status == SwipeSessionEnum.IN_PROGRESS
 
 
 class WebsocketPermission:

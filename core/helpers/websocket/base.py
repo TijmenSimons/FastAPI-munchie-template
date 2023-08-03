@@ -8,6 +8,7 @@ from core.db.enums import WebsocketActionEnum
 from core.exceptions.base import CustomException
 from core.exceptions.websocket import (
     ActionNotImplementedException,
+    NoMessageException,
     SuccessfullConnection,
 )
 from core.helpers.logger import get_logger
@@ -106,8 +107,7 @@ class BaseWebsocketService:
     async def handle_global_message(
         self, packet: WebsocketPacketSchema, websocket: WebSocket, **kwargs
     ):
-        """Handle a global message sent by an admin user to all participants of a
-        swipe session.
+        """Broadcast a message to all connected clients.
 
         Args:
             packet (SwipeSessionPacketSchema): WebsocketPacket sent by client.
@@ -117,10 +117,19 @@ class BaseWebsocketService:
             None.
         """
         del kwargs
+        
+        message = packet.payload.get("message")
 
-        await self.manager.handle_global_message(
-            websocket, packet.payload.get("message")
+        if not message:
+            await self.manager.handle_connection_code(websocket, NoMessageException)
+            return
+
+        payload = {"message": message}
+        packet = WebsocketPacketSchema(
+            action=WebsocketActionEnum.GLOBAL_MESSAGE, payload=payload
         )
+
+        await self.manager.global_packet(packet)
 
     async def handle_pool_message(
         self,
@@ -129,7 +138,7 @@ class BaseWebsocketService:
         websocket: WebSocket,
         **kwargs,
     ):
-        """Handle a message sent by a participant of a pool to the entire pool.
+        """Broadcast a message to all participants of a pool.
 
         Args:
             pool_id (int): Identifier for the pool to send the message to.
@@ -141,6 +150,15 @@ class BaseWebsocketService:
         """
         del kwargs
 
-        await self.manager.handle_pool_message(
-            websocket, pool_id, packet.payload.get("message")
+        message = packet.payload.get("message")
+
+        if not message:
+            await self.manager.handle_connection_code(websocket, NoMessageException)
+            return
+
+        payload = {"message": message}
+        packet = WebsocketPacketSchema(
+            action=WebsocketActionEnum.POOL_MESSAGE, payload=payload
         )
+
+        await self.manager.pool_packet(pool_id, packet)

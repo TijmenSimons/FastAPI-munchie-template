@@ -15,7 +15,6 @@ from core.exceptions.websocket import (
     ActionNotFoundException,
     ConnectionCode,
     JSONSerializableException,
-    NoMessageException,
 )
 from core.helpers.logger import get_logger
 from core.helpers.schemas.websocket import WebsocketPacketSchema
@@ -95,7 +94,7 @@ class WebsocketConnectionManager:
         await websocket.accept()
 
         if pool_id not in self.active_pools:
-            self.active_pools[pool_id] = {"connections": [], "queue": []}
+            self.active_pools[pool_id] = {"connections": []}
 
         self.active_pools[pool_id]["connections"].append(websocket)
 
@@ -190,7 +189,7 @@ class WebsocketConnectionManager:
         if self.get_connection_count(pool_id) < 1:
             self.active_pools.pop(pool_id)
 
-    async def disconnect_pool(self, pool_id, packet) -> None:
+    async def pool_disconnect(self, pool_id) -> None:
         """
         Sends a packet to all WebSocket connections in a given pool and removes each
         connection from the active pools list.
@@ -198,7 +197,6 @@ class WebsocketConnectionManager:
         Args:
             pool_id (str): The ID of the pool from which to disconnect all WebSocket
             connections.
-            packet (WebsocketPacketSchema): The packet to send to all WebSocket
             connections before disconnecting.
         """
         pool = self.active_pools.get(pool_id)
@@ -207,7 +205,6 @@ class WebsocketConnectionManager:
             get_logger("disconnect_from_no_pool")
             logging.error("Tried to disconnect from non existing pool")
             logging.info("pool_id: %s", pool_id)
-            logging.info("sending packet: %s", packet)
             logging.info("manager object: %s", self.__dict__)
             return
 
@@ -215,56 +212,7 @@ class WebsocketConnectionManager:
 
         websocket: WebSocket
         for websocket in connections:
-            await self.personal_packet(websocket, packet)
             await self.disconnect(websocket, pool_id)
-
-    async def handle_global_message(self, websocket: WebSocket, message: str) -> None:
-        """
-        Broadcast a message to all connected clients.
-
-        Args:
-            websocket: WebSocket object representing the active WebSocket connection.
-            message: A string representing the message to broadcast.
-
-        Returns:
-            None.
-        """
-        if not message:
-            await self.handle_connection_code(websocket, NoMessageException)
-            return
-
-        payload = {"message": message}
-        packet = WebsocketPacketSchema(
-            action=WebsocketActionEnum.GLOBAL_MESSAGE, payload=payload
-        )
-
-        await self.global_broadcast(packet)
-
-    async def handle_pool_message(
-        self, websocket: WebSocket, pool_id: int, message: str
-    ) -> None:
-        """
-        Broadcast a message to all participants of a pool.
-
-        Args:
-            websocket: WebSocket object representing the active WebSocket connection.
-            pool_id: An integer representing the ID of the pool to broadcast
-            the message to.
-            message: A string representing the message to broadcast.
-
-        Returns:
-            None.
-        """
-        if not message:
-            await self.handle_connection_code(websocket, NoMessageException)
-            return
-
-        payload = {"message": message}
-        packet = WebsocketPacketSchema(
-            action=WebsocketActionEnum.POOL_MESSAGE, payload=payload
-        )
-
-        await self.pool_broadcast(pool_id, packet)
 
     async def handle_connection_code(
         self, websocket, exception: CustomException | ConnectionCode
@@ -299,17 +247,7 @@ class WebsocketConnectionManager:
         """
         await self.send_data(websocket, packet.dict())
 
-    async def global_broadcast(self, packet: WebsocketPacketSchema) -> None:
-        """Broadcasts a packet to all connected websockets across all pools.
-
-        Args:
-            packet (WebsocketPacketSchema): The packet to be broadcasted.
-        """
-        for _, pool in self.active_pools.items():
-            for websocket in pool["connections"]:
-                await self.send_data(websocket, packet.dict())
-
-    async def pool_broadcast(self, pool_id: str, packet: WebsocketPacketSchema) -> None:
+    async def pool_packet(self, pool_id: str, packet: WebsocketPacketSchema) -> None:
         """Broadcasts a packet to all websockets connected to a specific pool.
 
         Args:
@@ -318,6 +256,16 @@ class WebsocketConnectionManager:
         """
         for websocket in self.active_pools[pool_id]["connections"]:
             await self.send_data(websocket, packet.dict())
+
+    async def global_packet(self, packet: WebsocketPacketSchema) -> None:
+        """Broadcasts a packet to all connected websockets across all pools.
+
+        Args:
+            packet (WebsocketPacketSchema): The packet to be broadcasted.
+        """
+        for _, pool in self.active_pools.items():
+            for websocket in pool["connections"]:
+                await self.send_data(websocket, packet.dict())
 
     def get_connection_count(self, pool_id: str | None = None) -> int:
         """ "Gets the total number of active websocket connections across all pools, or

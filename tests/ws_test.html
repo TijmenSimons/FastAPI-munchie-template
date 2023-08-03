@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chat</title>
+</head>
+
+<body>
+    <h1>WebSocket Chat</h1>
+    <div>
+        <label>Pool ID: <input type="text" id="poolId" autocomplete="off" value="identifier" /></label>
+        <label>username: <input type="text" id="username" autocomplete="off" value="username" /></label>
+        <button onclick="connect(event)">Connect</button>
+        <hr>
+        <label>Message: <input type="text" id="messageText" autocomplete="off" /></label>
+        <button onclick="sendMessage(event)">Send</button>
+    </div>
+    <ul id='messages'></ul>
+
+    <script>
+        const actions = {
+            CONNECTION_CODE: "CONNECTION_CODE",
+            GLOBAL_MESSAGE: "GLOBAL_MESSAGE",
+            POOL_MESSAGE: "POOL_MESSAGE",
+            POOL_USER_MESSAGE: "POOL_USER_MESSAGE",
+        }
+        var ws = null;
+        function connect(event) {
+            if (ws) {ws.close()}
+
+            var poolId = document.getElementById("poolId")
+            var username = document.getElementById("username")
+            // ws = new WebSocket("wss://munchie.azurewebsites.net/api/latest/swipe_sessions/" + itemId.value + token.value);
+            ws = new WebSocket("ws://localhost:8000/api/latest/chat/" + poolId.value + "/" + username.value);
+
+            ws.onmessage = function (event) {
+                var messages = document.getElementById('messages')
+                var message = document.createElement('li')
+                var content = document.createTextNode(event.data)
+                message.appendChild(content)
+                messages.appendChild(message)
+            };
+            event.preventDefault()
+        }
+        function sendMessage(event) {
+            var input = document.getElementById("messageText")
+            message = { action: actions.POOL_USER_MESSAGE, payload: { message: input.value } }
+            ws.send(JSON.stringify(message))
+            input.value = ''
+            event.preventDefault()
+        }
+    </script>
+</body>
+
+</html>
