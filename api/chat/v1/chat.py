@@ -1,3 +1,5 @@
+"""Chat enpoints."""
+
 from fastapi import APIRouter, WebSocket
 from app.chat.services.chat_websocket import ChatWebsocketService
 
@@ -10,4 +12,5 @@ async def websocket_endpoint(
     pool_id: str,
     username: str,
 ):
+    """Chat WebSocket endpoint to connect to."""
     await ChatWebsocketService().handler(websocket, pool_id, username)

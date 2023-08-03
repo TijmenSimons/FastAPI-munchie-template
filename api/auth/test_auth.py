@@ -1,3 +1,5 @@
+"""Unit tests for the /auth endpoints."""
+
 import pytest
 from httpx import AsyncClient
 
@@ -6,6 +8,7 @@ from httpx import AsyncClient
 async def test_refresh(
     client: AsyncClient,
 ):
+    """Test refreshing the JWT pair."""
     login_data = {
         "username": "normal_user",
         "password": "normal_user",
@@ -48,6 +51,7 @@ async def test_refresh(
 async def test_verify(
     client: AsyncClient,
 ):
+    """Test the token verification."""
     login_data = {
         "username": "normal_user",
         "password": "normal_user",
@@ -74,6 +78,7 @@ async def test_verify(
 
 @pytest.mark.asyncio
 async def test_user_not_found_login(client: AsyncClient):
+    """Test user not found response."""
     login_data = {
         "username": "no_user",
         "password": "no_user",
@@ -85,6 +90,7 @@ async def test_user_not_found_login(client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_incorrect_password(client: AsyncClient):
+    """Test incorrect password response."""
     login_data = {
         "username": "normal_user",
         "password": "incorrect_password",
@@ -96,6 +102,7 @@ async def test_incorrect_password(client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_fake_tokens(client: AsyncClient):
+    """Test various bad attempts at refreshing the JWT pair."""
     no_jti_bad = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoibEpyN1ZlejZHUXk0\
         WjJYRSIsInN1YiI6InJlZnJlc2giLCJleHAiOjE2OTEwOTU2NTN9.gOERoZeG0kreJ4D7zbNfILeWHN\
         PYJ3iUXK6QLIw8xqw"
@@ -136,6 +143,7 @@ async def test_fake_tokens(client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_bad_auth(client: AsyncClient):
+    """Test various bad attempts at authenticating."""
     login_data = {
         "username": "normal_user",
         "password": "normal_user",

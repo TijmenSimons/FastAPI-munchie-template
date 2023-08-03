@@ -1,17 +1,20 @@
+"""User endpoints"""
+
 from typing import List
 
 from fastapi import APIRouter, Depends
-from app.user.schemas.user import SetAdminSchema, UpdateUserSchema
+from app.user.schemas.user import (
+    SetAdminSchema,
+    UpdateUserSchema,
+    UserSchema,
+    CreateUserSchema,
+)
+from app.user.services import UserService
 from core.exceptions import ExceptionResponseSchema
 from core.fastapi.dependencies.hashid import get_path_user_id
 from core.fastapi.dependencies.permission import IsAuthenticated, IsUserOwner
 from core.fastapi_versioning.versioning import version
 
-from app.user.schemas import (
-    UserSchema,
-    CreateUserSchema,
-)
-from app.user.services import UserService
 from core.fastapi.dependencies.permission import (
     PermissionDependency,
     IsAdmin,
@@ -28,6 +31,7 @@ user_v1_router = APIRouter()
 )
 @version(1)
 async def get_user_list():
+    """Get full user list."""
     return await UserService().get_user_list()
 
 
@@ -38,6 +42,7 @@ async def get_user_list():
 )
 @version(1)
 async def create_user(request: CreateUserSchema):
+    """Register a new user."""
     user_id = await UserService().create_user(**request.dict())
     return await UserService().get_by_id(user_id)
 
@@ -54,6 +59,7 @@ async def create_user(request: CreateUserSchema):
 async def update_user(
     request: UpdateUserSchema, user_id: str = Depends(get_path_user_id)
 ):
+    """Update a user."""
     return await UserService().update(user_id, request)
 
 
@@ -61,13 +67,10 @@ async def update_user(
     "/{user_id}/admin",
     response_model=UserSchema,
     responses={"400": {"model": ExceptionResponseSchema}},
-    dependencies=[
-        Depends(PermissionDependency([[IsAdmin]]))
-    ],
+    dependencies=[Depends(PermissionDependency([[IsAdmin]]))],
 )
-async def set_admin(
-    request: SetAdminSchema, user_id: str = Depends(get_path_user_id)
-):
+async def set_admin(request: SetAdminSchema, user_id: str = Depends(get_path_user_id)):
+    """Manage a user's admin status."""
     return await UserService().set_admin(user_id, request)
 
 
@@ -80,4 +83,5 @@ async def set_admin(
 )
 @version(1)
 async def delete_user(user_id=Depends(get_path_user_id)):
+    """Permanently delete a user."""
     return await UserService().delete_user(user_id)

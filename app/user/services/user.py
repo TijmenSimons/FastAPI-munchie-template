@@ -108,7 +108,7 @@ class UserService:
 
         if not user:
             raise UserNotFoundException()
-        
+
         return user
 
     async def create_user(self, display_name: str, username: str, password: str) -> int:
@@ -179,7 +179,7 @@ class UserService:
             If the user with the given id does not exist.
         """
         user = await self.get_by_id(user_id)
-        
+
         return user.is_admin
 
     async def delete_user(self, user_id) -> None:

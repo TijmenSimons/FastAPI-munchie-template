@@ -1,12 +1,14 @@
+"""Test the chat websocket."""
+
+import pytest
 from fastapi.testclient import TestClient
 from starlette.testclient import WebSocketTestSession
 from core.db.enums import ChatWebsocketActionEnum as ChatEnum
-import pytest
-
 import core.exceptions.websocket as exc
 
 
 def assert_status_code(data, exception):
+    """Assert given status code."""
     assert data.get("action") == ChatEnum.CONNECTION_CODE
 
     payload = data.get("payload")
@@ -16,24 +18,27 @@ def assert_status_code(data, exception):
     assert payload.get("message") == exception.message
 
 
-def send_message(ws: WebSocketTestSession, message: str):
+def send_message(websocket: WebSocketTestSession, message: str):
+    """Send a Pool User Message on given websocket."""
     packet = {"action": ChatEnum.POOL_USER_MESSAGE, "payload": {"message": message}}
-    ws.send_json(packet)
+    websocket.send_json(packet)
+
 
 @pytest.mark.asyncio
 async def test_websocket(fastapi_client: TestClient):
+    """Test WebSocket responses."""
     with fastapi_client.websocket_connect("/api/v1/chat/pool/ws_1") as ws_1:
         ws_1: WebSocketTestSession
 
         data_1 = ws_1.receive_json()
         assert_status_code(data_1, exc.SuccessfullConnection)
-        
+
         packet = {"action": "NonExist", "payload": {}}
         ws_1.send_json(packet)
 
         data_1 = ws_1.receive_json()
         assert_status_code(data_1, exc.ActionNotFoundException)
-        
+
         ws_1.send_text("well this is not json")
 
         data_1 = ws_1.receive_json()
@@ -42,8 +47,11 @@ async def test_websocket(fastapi_client: TestClient):
 
 @pytest.mark.asyncio
 async def test_chat(fastapi_client: TestClient):
-    with (fastapi_client.websocket_connect("/api/v1/chat/pool/ws_1") as ws_1, 
-          fastapi_client.websocket_connect("/api/v1/chat/pool/ws_2") as ws_2):
+    """Test a multitude of messages."""
+    with (
+        fastapi_client.websocket_connect("/api/v1/chat/pool/ws_1") as ws_1,
+        fastapi_client.websocket_connect("/api/v1/chat/pool/ws_2") as ws_2,
+    ):
         ws_1: WebSocketTestSession
         ws_2: WebSocketTestSession
 
@@ -110,5 +118,3 @@ async def test_chat(fastapi_client: TestClient):
         data_1 = ws_1.receive_json()
 
         assert_status_code(data_1, exc.NoMessageException)
-
-

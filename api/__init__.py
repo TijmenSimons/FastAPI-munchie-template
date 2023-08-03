@@ -1,3 +1,5 @@
+"""Bundle all endpoints."""
+
 from fastapi import APIRouter
 
 from api.user.v1.user import user_v1_router

@@ -1,3 +1,5 @@
+"""Unit tests for the /me endpoints."""
+
 import pytest
 from httpx import AsyncClient
 
@@ -7,6 +9,8 @@ async def test_me(
     normal_user_token_headers: dict[str, str],
     client: AsyncClient,
 ):
+    """Test retrieve self information."""
+
     res = await client.get("/api/v1/me", headers=await normal_user_token_headers)
 
     assert res.status_code == 200
@@ -16,6 +20,8 @@ async def test_me(
 async def test_me_no_auth(
     client: AsyncClient,
 ):
+    """Test unauthorized"""
+
     res = await client.get("/api/v1/me")
 
     assert res.status_code == 401
@@ -26,6 +32,8 @@ async def test_update_me(
     normal_user_token_headers: dict[str, str],
     client: AsyncClient,
 ):
+    """Test self updating"""
+
     user_headers = await normal_user_token_headers
     res = await client.patch(
         "/api/v1/me",
@@ -57,8 +65,10 @@ async def test_update_me(
 @pytest.mark.asyncio
 async def test_delete_me(
     client: AsyncClient,
-    admin_token_headers: dict[str, str], 
+    admin_token_headers: dict[str, str],
 ):
+    """Test self deletion"""
+
     user_data = {
         "display_name": "delete_user",
         "username": "delete_user",

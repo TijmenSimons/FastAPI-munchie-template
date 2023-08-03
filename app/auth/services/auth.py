@@ -60,11 +60,27 @@ class AuthService:
             raise IncorrectPasswordException()
 
         return await self.jwt.create_login_tokens(user_id=user.id)
-    
+
     async def refresh_tokens(self, refresh_token: str) -> str:
+        """Generate a new token pair depending on the refresh token.
+        
+        Args:
+            refresh_token (str): The refresh JWT.
+            
+        Returns:
+            TokenSchema
+        """
         return await JwtService().refresh_tokens(refresh_token=refresh_token)
 
     async def verify_token(self, token: str):
+        """Verify a JWT.
+        
+        Args:
+            token (str): JWT.
+            
+        Returns:
+            Response
+        """
         try:
             await JwtService().verify_token(token=token)
 
