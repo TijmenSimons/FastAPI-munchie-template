@@ -1,3 +1,5 @@
+"""Activate all tasks."""
+
 from datetime import datetime, timedelta
 import os
 import glob
@@ -6,11 +8,11 @@ import sys
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from core.config import config
+from dotenv import load_dotenv
 
+from core.config import config
 from core.tasks.base_task import BaseTask
 from core.helpers import bcolors
-from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -69,11 +71,12 @@ def start_tasks() -> None:
 
     # Not using the config's connection string as that uses async.
     engine = create_engine(
-        f"postgresql+psycopg2://{os.getenv('DU')}:{os.getenv('DP')}@{os.getenv('H')}:{os.getenv('P')}/{os.getenv('DB')}"
+        f"postgresql+psycopg2://{os.getenv('DU')}:{os.getenv('DP')}@{os.getenv('H')}:"
+        f"{os.getenv('P')}/{os.getenv('DB')}"
     )
-    Session = sessionmaker(engine)
+    session = sessionmaker(engine)
 
-    with Session() as session:
+    with session() as session:
         tasks = get_tasks(session)
 
         for task in tasks:

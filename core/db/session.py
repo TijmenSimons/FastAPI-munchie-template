@@ -35,18 +35,20 @@ engines = {
 
 
 class RoutingSession(Session):
-    def get_bind(self, mapper=None, clause=None, **kw):
+    def get_bind(self, mapper=None, clause=None, **kwargs):
+        del kwargs
+
         if self._flushing or isinstance(clause, (Update, Delete, Insert)):
             return engines["writer"].sync_engine
         else:
             return engines["reader"].sync_engine
 
 
-# Added `expire_on_commit=False` because of the error: 
-# " 
-#   greenlet_spawn has not been called; can't call await_only() here. 
+# Added `expire_on_commit=False` because of the error:
+# "
+#   greenlet_spawn has not been called; can't call await_only() here.
 #   Was IO attempted in an unexpected place?
-# " 
+# "
 async_session_factory = sessionmaker(
     class_=AsyncSession,
     sync_session_class=RoutingSession,
@@ -61,7 +63,10 @@ session: Union[AsyncSession, async_scoped_session] = async_scoped_session(
 class Base(DeclarativeBase):
     """Base class for SQLAlchemy"""
 
-    # type annotation map is for the enums to be represented as their value, not their key
+    # type annotation map is for the enums to be represented as their value, 
+    # not their key
     type_annotation_map = {
-        enum.Enum: sqlalchemy.Enum(enum.Enum, values_callable=lambda x: [e.value for e in x]),
+        enum.Enum: sqlalchemy.Enum(
+            enum.Enum, values_callable=lambda x: [e.value for e in x]
+        ),
     }

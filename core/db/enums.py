@@ -2,20 +2,21 @@ from enum import Enum
 
 
 class BaseEnum(Enum):
-    pass
-
-
-class UserEnum(BaseEnum):
+    """Base enum"""
     pass
 
 
 class WebsocketActionEnum(str, BaseEnum):
+    """Define the websocket actions."""
+
     CONNECTION_CODE = "CONNECTION_CODE"
     POOL_MESSAGE = "POOL_MESSAGE"
     GLOBAL_MESSAGE = "GLOBAL_MESSAGE"
 
 
 class ChatWebsocketActionEnum(str, BaseEnum):
+    """Define the chat websocket actions."""
+
     CONNECTION_CODE = "CONNECTION_CODE"
     POOL_MESSAGE = "POOL_MESSAGE"
     GLOBAL_MESSAGE = "GLOBAL_MESSAGE"

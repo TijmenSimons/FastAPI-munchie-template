@@ -16,11 +16,11 @@ from core.exceptions.websocket import (
     ConnectionCode,
     JSONSerializableException,
 )
+from core.fastapi.dependencies.permission import BasePermission
 from core.helpers.logger import get_logger
 from core.helpers.schemas.websocket import WebsocketPacketSchema
 from core.helpers.websocket.auth import (
     AllowAll,
-    BaseWebsocketPermission,
     WebsocketPermission,
 )
 
@@ -34,7 +34,7 @@ class WebsocketConnectionManager:
     methods to get information about active pools of connections.
     """
 
-    def __init__(self, permissions: list[list[BaseWebsocketPermission]] = None):
+    def __init__(self, permissions: list[list[BasePermission]] = None):
         """
         Initializes WebsocketConnectionManager with an empty dictionary to hold active
         pools and its connections.
@@ -51,7 +51,7 @@ class WebsocketConnectionManager:
         self.permissions = permissions
 
     async def check_auth(
-        self, permissions: list[list[BaseWebsocketPermission]] = None, **kwargs
+        self, permissions: list[list[BasePermission]] = None, **kwargs
     ):
         """Check whether the client is authorized to perform the requested action.
 

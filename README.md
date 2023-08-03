@@ -8,6 +8,10 @@ Currently does not contain a WebSocket example. The Munchie repository does.
 
 ## To install the template
 
+The project is currently using a PostgreSQL database, make sure one is running to connect to.
+
+Details must be configured inside the .env file. (See `env_example.txt`)
+
 Make sure you are using the right python version (3.11+).
 
 ```cmd

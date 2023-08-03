@@ -1,3 +1,5 @@
+"""Base task with an example."""
+
 from datetime import datetime, timedelta
 import logging
 import threading
@@ -50,7 +52,7 @@ class BaseTask:
         """
         Placeholder propery; returns the time interval between task runs in seconds.
         """
-        raise Exception(f"Countdown on '{self.name}' is undefined")
+        raise KeyError(f"Countdown on '{self.name}' is undefined")
 
     def start(self) -> None:
         """
@@ -69,11 +71,9 @@ class BaseTask:
             self._timer.cancel()
 
     def run(self) -> None:
-        """
-        Runs the task and prints task status and execution time.
-        """
+        """Runs the task and prints task status and execution time."""
         if not self._running:
-            return
+            return None
 
         try:
             start = time.time()
@@ -124,24 +124,24 @@ class BaseTask:
             self._timer.start()
 
     def exec(self) -> None:
-        """
-        Placeholder method for defining task behavior.
-        """
-        ...
+        """Placeholder method for defining task behavior."""
 
 
 # NOTE: Example task.
 
-
 class Task(BaseTask):
+    """Example task unit."""
+
     def __init__(self, session, capture_exceptions) -> None:
+        """Initialize the task."""
         name = "Example Task"
         super().__init__(session, capture_exceptions, name)
 
     @property
     def countdown(self) -> int:
+        """Calculate the countdown"""
         # Run every 0 seconds (instantly, aka continuesly)
         return 0
 
     def exec(self) -> None:
-        ...
+        """Task behaviour."""
